@@ -7,6 +7,7 @@ from web import form
 urls = (
     "/", "Index",
     "/cluster/(.*)/config", "Config",
+    "/cluster/(.*)/logs", "Logs",
 )
 app = web.application(urls, globals())
 render = web.template.render("templates/")
@@ -36,7 +37,11 @@ class Index:
         reprovision_form = build_reprovision_form()
         if reprovision_form.validates():
             if reprovision_form.get("Reprovision").get_value() is not None:
-                print("REPROVISIONING")
+                cluster = reprovision_form.get("Cluster").get_value()
+                try:
+                    trigger_reprovision(cluster)
+                except Exception as exc:
+                    raise web.internalerror(exc)
 
         web.seeother("/")
 
@@ -45,6 +50,14 @@ class Config:
     def GET(self, cluster_name):
         try:
             return read_cluster_file(cluster_name, "config")
+        except Exception as exc:
+            raise web.internalerror(exc)
+
+
+class Logs:
+    def GET(self, cluster_name):
+        try:
+            return read_provision_logs(cluster_name)
         except Exception as exc:
             raise web.internalerror(exc)
 
@@ -61,6 +74,9 @@ def collect_clusters():
     clusters = []
 
     for cluster_dir in os.listdir("clusters"):
+        if read_cluster_file(cluster_dir, "ENABLED") != "YES":
+            continue
+
         cluster = {}
         cluster["name"] = read_cluster_file(cluster_dir, "NAME")
         cluster["status"] = read_cluster_file(cluster_dir, "STATUS")
@@ -109,13 +125,33 @@ def build_reprovision_form(user=None, cluster=None):
 
 
 def read_cluster_file(cluster, file_name):
-    with open(os.path.join("clusters", cluster, file_name)) as cluster_file:
+    path = os.path.join("clusters", cluster, file_name)
+
+    if not os.path.exists(path):
+        return None
+
+    with open(path) as cluster_file:
         return cluster_file.read().strip()
 
 
 def write_cluster_file(cluster, file_name, value):
     with open(os.path.join("clusters", cluster, file_name), "w") as cluster_file:
         return cluster_file.write(value)
+
+
+def trigger_reprovision(cluster_name):
+    try:
+        subprocess.check_output(["./trigger_reprovision", cluster_name], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        raise Exception("Failed triggering reprovision", exc.returncode, exc.output)
+
+
+def read_provision_logs(cluster_name):
+    try:
+        provision_logs = subprocess.check_output(["./read_provision_logs", cluster_name], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        raise Exception("Failed reading provision logs", exc.returncode, exc.output)
+    return str(provision_logs, "utf-8").strip()
 
 
 if __name__ == "__main__":

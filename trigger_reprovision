@@ -1,0 +1,18 @@
+#!/usr/bin/bash -xe
+
+cluster_name=$1
+
+# Make sure we have a session
+tmux new-session -d -s ${cluster_name} || true
+
+# Cancel whatever is running in there
+tmux send-keys -t ${cluster_name}.0 ^C
+tmux send-keys -t ${cluster_name}.0 ^C
+tmux send-keys -t ${cluster_name}.0 ^C
+
+# Clear previous logs if any
+tmux send-keys -t ${cluster_name}.0 "clear" ENTER
+tmux clear-history -t ${cluster_name}.0
+
+# Reprovision the cluster
+tmux send-keys -t ${cluster_name}.0 "./reprovision ${cluster_name}" ENTER

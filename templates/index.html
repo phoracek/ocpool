@@ -84,7 +84,7 @@ $def with(host_name, clusters)
                 <td>$cluster['status']</td>
                 <td><form method="POST">$:cluster['reprovision_form'].render()</form></td>
                 <td><a href="/cluster/$cluster['name']/config">config</a></td>
-                <td><a href="">provision.log</a></td>
+                <td><a href="/cluster/$cluster['name']/logs">provision.log</a></td>
             </tr>
         </table>
     </div>

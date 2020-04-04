@@ -1,0 +1,42 @@
+#!/usr/bin/bash -xe
+
+cluster_name=$1
+
+trap "echo Failed > clusters/${cluster_name}/STATUS" EXIT
+
+# Set status to Pending
+echo Pending > clusters/${cluster_name}/STATUS
+
+# We cannot provision multiple clusters at the same time,
+# wait until all the others are done
+while find clusters -type f -name STATUS | xargs grep "Reprovisioning"; do
+    sleep 30
+done
+
+# Set status to Reprovisioning
+echo Reprovisioning > clusters/${cluster_name}/STATUS
+
+# Reprovision
+(
+    source clusters/${cluster_name}/config
+    cd ~/dev-scripts
+    make clean
+    make
+    export KUBECONFIG=${PWD}/ocp/${CLUSTER_NAME}/auth/kubeconfig
+    masters=$(oc get nodes -l node-role.kubernetes.io/master -o'custom-columns=name:metadata.name' --no-headers)
+    for master in ${masters}; do
+        oc adm taint nodes master-${num} node-role.kubernetes.io/master:NoSchedule-
+    done
+)
+
+# We cannot provision multiple clusters at the same time,
+# wait until all the others are done
+while find clusters -type f -name STATUS | xargs grep "Reprovisioning"; do
+    sleep 30
+done
+
+# Set status to Available
+echo Available > clusters/${cluster_name}/STATUS
+
+# Sleep until canceled
+sleep infinity

@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+cluster_name=$1
+
+tmux capture-pane -S -100000 -pt ${cluster_name}.0
