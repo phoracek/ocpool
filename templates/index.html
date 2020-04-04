@@ -16,6 +16,10 @@ $def with(host_name, clusters)
             font-family: Sans-Serif;
         }
 
+        .displayNone {
+            display: none;
+        }
+
         div#content {
             max-width: 900px;
             margin: auto;
@@ -47,6 +51,16 @@ $def with(host_name, clusters)
         table#clusters td {
             text-align: center;
         }
+
+        form table,
+        form th,
+        form td {
+            border: 0px;
+        }
+
+        form th {
+            display: none;
+        }
     </style>
 </head>
 
@@ -56,7 +70,7 @@ $def with(host_name, clusters)
         <h2>Clusters</h2>
         <table id="clusters">
             <tr>
-                <th>Name</th>
+                <th width="99%">Name</th>
                 <th>Owner</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -66,10 +80,10 @@ $def with(host_name, clusters)
             $for cluster in clusters:
             <tr>
                 <td>$cluster['name']</td>
-                <td>$cluster['owner'] <button>Take</button></td>
+                <td><form method="POST">$:cluster['owner_form'].render()</form></td>
                 <td>$cluster['status']</td>
-                <td><button>Reprovision</button></td>
-                <td><a href="">config</a></td>
+                <td><form method="POST">$:cluster['reprovision_form'].render()</form></td>
+                <td><a href="/cluster/$cluster['name']/config">config</a></td>
                 <td><a href="">provision.log</a></td>
             </tr>
         </table>
