@@ -1,17 +1,79 @@
-$def with(host_name)
+$def with(host_name, clusters)
 
 <!doctype html>
 
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
 
     <title>ocpool</title>
     <meta name="description" content="Pool of OpenShift clusters">
     <meta name="author" content="Petr Horacek">
-  </head>
 
-  <body>
-    <h1>ocpool - $host_name</h1>
-  </body>
+    <style>
+        body {
+            font-family: Sans-Serif;
+        }
+
+        div#content {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        th,
+        td {
+            padding: 4px;
+        }
+
+        table#clusters {
+            width: 100%;
+        }
+
+        table#clusters td {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <h1>ocpool - $host_name</h1>
+        <h2>Clusters</h2>
+        <table id="clusters">
+            <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Actions</th>
+                <th>Config</th>
+                <th>Logs</th>
+            </tr>
+            $for cluster in clusters:
+            <tr>
+                <td>$cluster['name']</td>
+                <td>$cluster['owner'] <button>Take</button></td>
+                <td>$cluster['status']</td>
+                <td><button>Reprovision</button></td>
+                <td><a href="">config</a></td>
+                <td><a href="">provision.log</a></td>
+            </tr>
+        </table>
+    </div>
+</body>
+
 </html>
