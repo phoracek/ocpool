@@ -9,8 +9,6 @@ fi
 
 # Cancel whatever is running in there
 tmux send-keys -t ${cluster_name}.0 ^C
-tmux send-keys -t ${cluster_name}.0 ^C
-tmux send-keys -t ${cluster_name}.0 ^C
 
 # Clear previous logs if any
 tmux send-keys -t ${cluster_name}.0 "clear" ENTER
