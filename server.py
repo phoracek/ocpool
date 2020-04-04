@@ -80,6 +80,7 @@ def collect_clusters():
         cluster = {}
         cluster["name"] = read_cluster_file(cluster_dir, "NAME")
         cluster["status"] = read_cluster_file(cluster_dir, "STATUS")
+        cluster["owner"] = read_cluster_file(cluster_dir, "OWNER")
         cluster["owner_form"] = build_owner_form(
             read_cluster_file(cluster_dir, "OWNER"), cluster["name"])
         cluster["reprovision_form"] = build_reprovision_form(

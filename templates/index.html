@@ -82,7 +82,7 @@ $def with(host_name, clusters)
                 <td>$cluster['name']</td>
                 <td><form method="POST">$:cluster['owner_form'].render()</form></td>
                 <td>$cluster['status']</td>
-                <td><form method="POST" onsubmit="return confirm('Are you sure you want to reprovision $cluster['name']?');">$:cluster['reprovision_form'].render()</form></td>
+                <td><form method="POST" onsubmit="return confirm('Are you sure you want to reprovision $cluster['name'] owned by user $cluster['owner']?');">$:cluster['reprovision_form'].render()</form></td>
                 <td><a href="/cluster/$cluster['name']/config">config</a></td>
                 <td><a href="/cluster/$cluster['name']/logs">provision.log</a></td>
             </tr>
