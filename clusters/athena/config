@@ -10,4 +10,4 @@ export SERVICE_SUBNET=172.21.0.0/16
 export DNS_VIP=192.168.111.2
 export VBMC_BASE_PORT=6230
 export LOCAL_REGISTRY_PORT=5000
-export OPENSHIFT_RELEASE_IMAGE=registry.svc.ci.openshift.org/ocp/release:4.5.0-0.ci-2020-04-03-173912
+export OPENSHIFT_RELEASE_IMAGE=quay.io/openshift-release-dev/ocp-release:4.4.0-rc.6-x86_64
