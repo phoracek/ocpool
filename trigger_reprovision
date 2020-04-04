@@ -3,7 +3,7 @@
 cluster_name=$1
 
 # Make sure we have a session
-tmux new-session -d -s ${cluster_name} || true
+tmux set-option -g history-limit 100000 \; new-session -d -s ${cluster_name} || true
 
 # Cancel whatever is running in there
 tmux send-keys -t ${cluster_name}.0 ^C
