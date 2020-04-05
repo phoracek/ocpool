@@ -22,18 +22,7 @@ echo Reprovisioning > clusters/${cluster_name}/STATUS
     cd ~/dev-scripts
     make clean
     make
-    export KUBECONFIG=${PWD}/ocp/${CLUSTER_NAME}/auth/kubeconfig
-    masters=$(oc get nodes -l node-role.kubernetes.io/master -o'custom-columns=name:metadata.name' --no-headers)
-    for master in ${masters}; do
-        oc adm taint nodes master-${num} node-role.kubernetes.io/master:NoSchedule-
-    done
 )
-
-# We cannot provision multiple clusters at the same time,
-# wait until all the others are done
-while find clusters -type f -name STATUS | xargs grep "Reprovisioning"; do
-    sleep 30
-done
 
 # Set status to Available
 echo Available > clusters/${cluster_name}/STATUS
