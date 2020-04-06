@@ -18,6 +18,7 @@ echo Reprovisioning > clusters/${cluster_name}/STATUS
 
 # Reprovision
 (
+    export BASE_DOMAIN=$(hostnamectl status --static)
     source clusters/${cluster_name}/config
     cd ~/dev-scripts
     make clean
