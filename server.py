@@ -8,6 +8,8 @@ urls = (
     "/", "Index",
     "/cluster/(.*)/config", "Config",
     "/cluster/(.*)/logs", "Logs",
+    "/cluster/(.*)/login", "Login",
+    "/cluster/(.*)/kubeconfig", "Kubeconfig",
 )
 app = web.application(urls, globals())
 render = web.template.render("templates/")
@@ -60,6 +62,30 @@ class Logs:
             return read_provision_logs(cluster_name)
         except Exception as exc:
             raise web.internalerror(exc)
+
+
+class Login:
+    def GET(self, cluster_name):
+        try:
+            host_name = get_host_name()
+            host_name_and_port = web.ctx.host
+            console_password = read_auth_file(cluster_name, "kubeadmin-password")
+            external_subnet = read_config_variable(cluster_name, "EXTERNAL_SUBNET")
+        except Exception as exc:
+            raise web.internalerror(exc)
+
+        return render.login(
+            host_name=host_name,
+            host_name_and_port=host_name_and_port,
+            cluster_name=cluster_name,
+            external_subnet=external_subnet,
+            console_password=console_password,
+        )
+
+
+class Kubeconfig:
+    def GET(self, cluster_name):
+        return read_auth_file(cluster_name, "kubeconfig")
 
 
 def get_host_name():
@@ -153,6 +179,25 @@ def read_provision_logs(cluster_name):
     except subprocess.CalledProcessError as exc:
         raise Exception("Failed reading provision logs", exc.returncode, exc.output)
     return str(provision_logs, "utf-8").strip()
+
+
+def read_auth_file(cluster, file_name):
+    path = os.path.expanduser(os.path.join("~/dev-scripts", "ocp", cluster, "auth", file_name))
+
+    if not os.path.exists(path):
+        return "Not found"
+
+    with open(path) as cluster_file:
+        return cluster_file.read()
+
+
+def read_config_variable(cluster, variable_name):
+    with open(os.path.join("clusters", cluster, "config")) as cluster_config:
+        for line in cluster_config.readlines():
+            if line.startswith(f"export {variable_name}="):
+                return line.split("=", 1)[1]
+
+    raise Exception(f"Variable '{variable_name}' was not found in cluster '{cluster}' config")
 
 
 if __name__ == "__main__":

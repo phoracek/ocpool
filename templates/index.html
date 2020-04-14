@@ -76,6 +76,7 @@ $def with(host_name, clusters)
                 <th>Actions</th>
                 <th>Config</th>
                 <th>Logs</th>
+                <th>Login</th>
             </tr>
             $for cluster in clusters:
             <tr>
@@ -85,6 +86,12 @@ $def with(host_name, clusters)
                 <td><form method="POST" onsubmit="return confirm('Are you sure you want to reprovision $cluster['name'] owned by user $cluster['owner']?');">$:cluster['reprovision_form'].render()</form></td>
                 <td><a href="/cluster/$cluster['name']/config">config</a></td>
                 <td><a href="/cluster/$cluster['name']/logs">provision.log</a></td>
+                <td>
+                    $if cluster['status'] == 'Available' and cluster['owner']:
+                        <a href="/cluster/$cluster['name']/login">guide</a>
+                    $else:
+                        N/A
+                </td>
             </tr>
         </table>
     </div>

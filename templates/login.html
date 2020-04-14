@@ -1,0 +1,59 @@
+$def with(host_name, host_name_and_port, cluster_name, external_subnet, console_password)
+
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>ocpool - $cluster_name login</title>
+    <meta name="description" content="Guide on how to login into cluster">
+    <meta name="author" content="Petr Horacek">
+
+    <style>
+        body {
+            font-family: Sans-Serif;
+        }
+
+        div#content {
+            max-width: 900px;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <h1>ocpool - $cluster_name login</h1>
+        <p>This guide descibes how to login to the current deployment of the cluster. These steps need to be repeated for every new provision.</p>
+
+        <h2>Tunnel to the host</h2>
+        <p>In order to access the cluster, you first need to create a tunnel to the host. You can use <code>sshuttle</code> to do so.</p>
+        <p>Note that the following command temporarily configures your host to use the host as you DNS server. That means that owner of given cluster can potentionally monitor your DNS resolution.</p>
+        <pre>
+            <code>
+sshuttle -r root@$host_name -Hv --dns $external_subnet
+            </code>
+        </pre>
+
+        <h2>Obtain kubeconfig</h2>
+        <p>Download kubeconfig for given cluster and export it. After that, you can use your local <code>oc</code> tool to controll the cluster.</p>
+        <pre>
+            <code>
+curl $host_name_and_port/cluster/$cluster_name/kubeconfig -o kubeconfig
+export KUBECONFIG=\$(pwd)/kubeconfig
+            </code>
+        </pre>
+
+        <h2>Login to console</h2>
+        <p>It is possible to remotely log in into the OpenShift console.</p>
+        <ul>
+            <li>URL: <a href="https://console-openshift-console.apps.$cluster_name.$host_name">https://console-openshift-console.apps.$cluster_name.$host_name</a></li>
+            <li>Username: <code>kubeadmin</code></li>
+            <li>Password: <code>$console_password</code></li>
+        </ul>
+    </div>
+</body>
+
+</html>
