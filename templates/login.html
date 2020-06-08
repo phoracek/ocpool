@@ -27,8 +27,29 @@ $def with(host_name, host_name_and_port, cluster_name, external_subnet, console_
     <div id="content">
         <h1>ocpool - $cluster_name login</h1>
         <p>This guide descibes how to login to the current deployment of the cluster. These steps need to be repeated for every new provision.</p>
+        <p>You can either connect directly to the server and interact with the cluster there or use sshuttle for remote access</p>
 
-        <h2>Tunnel to the host</h2>
+        <h2>Connect to the server via SSH</h2>
+
+        <h3>Login to the server</h3>
+        <p>First of all, connect to the server via SSH</p>
+        <pre>
+            <code>
+ssh root@$host_name
+            </code>
+        </pre>
+
+        <h3>Export kubeconfig</h3>
+        <p>Make sure to use following KUBECONFIG to connect to the cluster you deployed.</p>
+        <pre>
+            <code>
+export KUBECONFIG=~/ocp/$cluster_name/auth/kubeconfig
+            </code>
+        </pre>
+
+        <h2>Remote access via sshuttle</h2>
+
+        <h3>Tunnel to the host</h3>
         <p>In order to access the cluster, you first need to create a tunnel to the host. You can use <code>sshuttle</code> to do so.</p>
         <p>Note that the following command temporarily configures your host to use the host as you DNS server. That means that owner of given cluster can potentionally monitor your DNS resolution.</p>
         <pre>
@@ -37,7 +58,7 @@ sshuttle -r root@$host_name -Hv --dns $external_subnet
             </code>
         </pre>
 
-        <h2>Obtain kubeconfig</h2>
+        <h3>Obtain kubeconfig</h3>
         <p>Download kubeconfig for given cluster and export it. After that, you can use your local <code>oc</code> tool to controll the cluster.</p>
         <pre>
             <code>
@@ -46,7 +67,7 @@ export KUBECONFIG=\$(pwd)/kubeconfig
             </code>
         </pre>
 
-        <h2>Login to console</h2>
+        <h3>Login to console</h3>
         <p>It is possible to remotely log in into the OpenShift console.</p>
         <ul>
             <li>URL: <a href="https://console-openshift-console.apps.$cluster_name.$host_name">https://console-openshift-console.apps.$cluster_name.$host_name</a></li>
