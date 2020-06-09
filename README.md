@@ -8,8 +8,6 @@ available in `~/dev-scripts`.
 Run ocpool server:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
 pip install -r requirements.txt
 python server.py
 ```
